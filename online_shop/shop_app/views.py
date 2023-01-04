@@ -63,7 +63,7 @@ class BookCreateAPIView(CreateAPIView):
         stock = data.get('stock', None)
         description = data.get('description', None)
         image_url = data.get('image_url', None)
-        book_obj = Book(book_title=book_title, category=category, isbn=isbn, author_name=author_name, pages=pages,
+        book_obj = Book(book_title=book_title, category_id=category, isbn=isbn, author_name=author_name, pages=pages,
                         book_price=book_price, stock=stock, description=description, image_url=image_url)
         book_obj.save()
         return Response(data={'details': 'New Book added.'}, status=status.HTTP_201_CREATED)
