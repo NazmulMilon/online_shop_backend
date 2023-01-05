@@ -1,11 +1,14 @@
+import json
+
 from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
-    CreateAPIView
+    CreateAPIView, UpdateAPIView
 from .models import Category, Book, Product
 from .serializers import CategorySerializer, BookSerializer, ProductSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.validators import ValidationError
+from django.http.response import HttpResponse, JsonResponse
 
 
 #
@@ -46,6 +49,16 @@ class CategoryRetrieveAPIView(RetrieveAPIView):
             # raise ValidationError
         serializer = CategorySerializer(category_qs)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CategoryUpdateAPIView(UpdateAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        category_qs = Category.objects.filter(id=pk).update(**request.data)
+        return Response(data={'details': 'Category data updated. '}, status=status.HTTP_200_OK)
 
 
 class BookCreateAPIView(CreateAPIView):
@@ -91,6 +104,16 @@ class BookDetailAPIView(RetrieveAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class BookUpdateAPIView(UpdateAPIView):
+    serializer_class = BookSerializer
+    queryset = Book.objects.all()
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        book_queryset = Book.objects.filter(id=pk).update(**request.data)
+        return Response(data={'details': 'Book data are updated. '}, status=status.HTTP_200_OK)
+
+
 class ProductCreateAPIView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -117,6 +140,17 @@ class ProductListAPIView(ListAPIView):
         queryset = Product.objects.all()
         serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+        # data_list = []
+        #
+        # for p in queryset:
+        #     data_dict = {
+        #         "id": p.id,
+        #         "product_tag": p.product_tag,
+        #         "product_name": p.product_name,
+        #         "description": p.description,
+        #     }
+        #     data_list.append(data_dict)
+        # return JsonResponse(data_list, safe=False)
 
 
 class ProductRetrieveAPIView(RetrieveAPIView):
@@ -130,6 +164,16 @@ class ProductRetrieveAPIView(RetrieveAPIView):
         serializer = ProductSerializer(product_queryset)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class ProductUpdateAPIView(UpdateAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        product_queryset = Product.objects.filter(id=pk).update(**request.data)
+
+        return Response(data={'Products are updated. '}, status=status.HTTP_200_OK)
 
 # class CategoryListAPIView(ListCreateAPIView):
 #     serializer_class = CategorySerializer
