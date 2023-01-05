@@ -90,6 +90,47 @@ class BookDetailAPIView(RetrieveAPIView):
         serializer = BookSerializer(book_queryset)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class ProductCreateAPIView(CreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def post(self, request, *args, **kwargs):
+        product_tag = request.data.get('product_tag', None)
+        product_name = request.data.get('product_name', None)
+        category = request.data.get('category', None)
+        product_price = request.data.get('product_price', None)
+        stock = request.data.get('stock', None)
+        image_url = request.data.get('image_url', None)
+        description = request.data.get('description', None)
+        product_obj = Product(product_tag=product_tag, product_name=product_name, category_id=category,
+                              product_price=product_price, stock=stock, image_url=image_url, description=description)
+        product_obj.save()
+        return Response(data={'detail': 'Product has created. '}, status=status.HTTP_201_CREATED)
+
+
+class ProductListAPIView(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def get(self, request, *args, **kwargs):
+        queryset = Product.objects.all()
+        serializer = ProductSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProductRetrieveAPIView(RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def get(self, request, *args, **kwargs):
+        product_queryset = Product.objects.filter(pk=kwargs['pk']).first()
+        if product_queryset is None:
+            return Response(data={'details': 'No Product found regarding this id. '}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductSerializer(product_queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # class CategoryListAPIView(ListCreateAPIView):
 #     serializer_class = CategorySerializer
 #     queryset = Category.objects.all()
