@@ -10,8 +10,16 @@ class CategoryRetrieveSerializer(ModelSerializer):
         fields = "__all__"
 
 
+# class BookCreateSerializer(ModelSerializer):
+#     category = serializers.IntegerField(required=True)
+#
+#     class Meta:
+#         model = Book
+#         exclude = ['created_at', 'update_at']
+#
+
 class BookCreateSerializer(ModelSerializer):
-    category = serializers.IntegerField(required=True)
+    category = serializers.JSONField(required=True)
 
     class Meta:
         model = Book
