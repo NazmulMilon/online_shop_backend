@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
     CreateAPIView, UpdateAPIView
 from .models import Category, Book, Product
-from .serializers import CategorySerializer, BookSerializer, ProductSerializer
+from .serializers import CategorySerializer, BookSerializer, ProductSerializer, CategoryRetrieveSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.validators import ValidationError
@@ -37,7 +37,7 @@ class CategoryListAPIView(ListAPIView):
 
 
 class CategoryRetrieveAPIView(RetrieveAPIView):
-    serializer_class = CategorySerializer
+    serializer_class = CategoryRetrieveSerializer
     queryset = Category.objects.all()
 
     def get(self, request, *args, **kwargs):
@@ -47,7 +47,7 @@ class CategoryRetrieveAPIView(RetrieveAPIView):
         if category_qs is None:
             return Response(data={'details': 'There is no data regarding this id'}, status=status.HTTP_404_NOT_FOUND)
             # raise ValidationError
-        serializer = CategorySerializer(category_qs)
+        serializer = CategoryRetrieveSerializer(category_qs)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -171,8 +171,7 @@ class ProductUpdateAPIView(UpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         pk = kwargs.get('pk', None)
-        product_queryset = Product.objects.filter(id=pk).update(**request.data)
-
+        # product_queryset = Product.objects.filter(id=pk).update(**request.data)
         return Response(data={'Products are updated. '}, status=status.HTTP_200_OK)
 
 # class CategoryListAPIView(ListCreateAPIView):
