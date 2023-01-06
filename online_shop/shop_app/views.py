@@ -4,7 +4,8 @@ from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
     CreateAPIView, UpdateAPIView
 from .models import Category, Book, Product
-from .serializers import CategorySerializer, BookSerializer, ProductSerializer, CategoryRetrieveSerializer
+from .serializers import CategorySerializer, BookSerializer, ProductSerializer, CategoryRetrieveSerializer, \
+    BookCreateSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.validators import ValidationError
@@ -62,19 +63,32 @@ class CategoryUpdateAPIView(UpdateAPIView):
 
 
 class BookCreateAPIView(CreateAPIView):
-    serializer_class = BookSerializer
+    serializer_class = BookCreateSerializer
     queryset = Book.objects.all()
 
     def post(self, request, *args, **kwargs):
         data = request.data
         book_title = data.get('book_title', None)
+        if book_title is None:
+            return Response(data={'Details': 'Book title required. '}, status=status.HTTP_400_BAD_REQUEST)
         category = data.get('category', None)
+        # if category is None:
+        #     return Response(data={'details': 'Category name required. '}, status=status.HTTP_400_BAD_REQUEST)
+        if not Category.objects.filter(id=category).exists():
+            return Response(data={'Details': "Category Doesn't Exist"}, status=status.HTTP_400_BAD_REQUEST)
         isbn = data.get('isbn', None)
         author_name = data.get('author_name', None)
         pages = data.get('pages', None)
         book_price = data.get('book_price', None)
+        if book_price < 50:
+            return Response(data={'Details': 'Price must be above 50. '}, status=status.HTTP_400_BAD_REQUEST)
         stock = data.get('stock', None)
+        if stock < 5:
+            return Response(data={'Details': 'Stock must be at least 5. '}, status=status.HTTP_400_BAD_REQUEST)
         description = data.get('description', None)
+        if len(description) <= 20 or len(description) >= 1000:
+            return Response(data={'Details': 'Length must be between 20 to 1000. '}, status=status.HTTP_400_BAD_REQUEST)
+
         image_url = data.get('image_url', None)
         book_obj = Book(book_title=book_title, category_id=category, isbn=isbn, author_name=author_name, pages=pages,
                         book_price=book_price, stock=stock, description=description, image_url=image_url)
@@ -122,6 +136,8 @@ class ProductCreateAPIView(CreateAPIView):
         product_tag = request.data.get('product_tag', None)
         product_name = request.data.get('product_name', None)
         category = request.data.get('category', None)
+        if category is None:
+            return Response(data={'details': 'Category name required. '}, status=status.HTTP_404_NOT_FOUND)
         product_price = request.data.get('product_price', None)
         stock = request.data.get('stock', None)
         image_url = request.data.get('image_url', None)

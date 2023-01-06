@@ -1,12 +1,21 @@
 from rest_framework.serializers import ModelSerializer
 from .models import Category, Book, Product
 from rest_framework.serializers import SerializerMethodField
+from rest_framework import serializers
 
 
 class CategoryRetrieveSerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = "__all__"
+
+
+class BookCreateSerializer(ModelSerializer):
+    category = serializers.IntegerField(required=True)
+
+    class Meta:
+        model = Book
+        exclude = ['created_at', 'update_at']
 
 
 class BookSerializer(ModelSerializer):
