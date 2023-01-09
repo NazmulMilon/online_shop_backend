@@ -67,16 +67,39 @@ class BookCreateAPIView(CreateAPIView):
     queryset = Book.objects.all()
 
     def post(self, request, *args, **kwargs):
+        category_obj = None
         data = request.data
         book_title = data.get('book_title', None)
         if book_title is None:
             return Response(data={'Details': 'Book title required. '}, status=status.HTTP_400_BAD_REQUEST)
         category = data.get('category', None)
-        # if category is None:
-        #     return Response(data={'details': 'Category name required. '}, status=status.HTTP_400_BAD_REQUEST)
-        data["category"]["id"]
-        if not Category.objects.filter(id=category).exists():
-            return Response(data={'Details': "Category Doesn't Exist"}, status=status.HTTP_400_BAD_REQUEST)
+        if category is None:
+            return Response(data={'details': 'Category name required. '}, status=status.HTTP_400_BAD_REQUEST)
+
+        # if not Category.objects.filter(id=category["id"]).exists():
+        #     # return Response(data={'Details': "Category Doesn't Exist"}, status=status.HTTP_400_BAD_REQUEST)
+        #     if not Category.objects.filter(category_title=category["name"]).exists():
+        #         # return Response(data={'Details': "Category name Doesn't Exist"}, status=status.HTTP_400_BAD_REQUEST)
+        #         # Category.objects.create(category_title=name)
+        #         category_obj = Category(id=id, category_title=name)
+        #         category_obj.save()
+        # id = category["id"]
+        # name = category["name"]
+
+        if "id" in request.data["category"].keys():
+            # return Response(data={'details': "category id doesn't exist. "})
+            category_obj = Category.objects.filter(id=category["id"]).first()
+            if not category_obj:
+                return Response(data={'details': "category id doesn't exist. "})
+        elif "name" in request.data["category"].keys():
+            category_obj = Category.objects.filter(category_title=category["name"]).first()
+            if not category_obj:
+                category_obj = Category.objects.create(category_title=category["name"])
+
+        # if Category.objects.filter(category_title=category["name"]).exists():
+        #     return Response(data={'details': 'category name exists. '}, status=status.HTTP_400_BAD_REQUEST)
+        # else:
+        #     Category.objects.create(category_title=category["name"])
         isbn = data.get('isbn', None)
         author_name = data.get('author_name', None)
         pages = data.get('pages', None)
@@ -91,8 +114,8 @@ class BookCreateAPIView(CreateAPIView):
             return Response(data={'Details': 'Length must be between 20 to 1000. '}, status=status.HTTP_400_BAD_REQUEST)
 
         image_url = data.get('image_url', None)
-        book_obj = Book(book_title=book_title, category_id=category, isbn=isbn, author_name=author_name, pages=pages,
-                        book_price=book_price, stock=stock, description=description, image_url=image_url)
+        book_obj = Book(book_title=book_title, category_id=category_obj.id, isbn=isbn, author_name=author_name,
+                        pages=pages, book_price=book_price, stock=stock, description=description, image_url=image_url)
         book_obj.save()
         return Response(data={'details': 'New Book added.'}, status=status.HTTP_201_CREATED)
 
@@ -123,7 +146,8 @@ class BookCreateAPIView(CreateAPIView):
 #             return Response(data={'Details': 'Stock must be at least 5. '}, status=status.HTTP_400_BAD_REQUEST)
 #         description = data.get('description', None)
 #         if len(description) <= 20 or len(description) >= 1000:
-#             return Response(data={'Details': 'Length must be between 20 to 1000. '}, status=status.HTTP_400_BAD_REQUEST)
+#             return Response(data={'Details': 'Length must be between 20 to 1000. '},
+#             status=status.HTTP_400_BAD_REQUEST)
 #
 #         image_url = data.get('image_url', None)
 #         book_obj = Book(book_title=book_title, category_id=category, isbn=isbn, author_name=author_name, pages=pages,
@@ -147,10 +171,10 @@ class BookDetailAPIView(RetrieveAPIView):
     queryset = Book.objects.all()
 
     def get(self, request, *args, **kwargs):
-        book_queryset = Book.objects.filter(pk=kwargs['pk']).first()
-        if book_queryset is None:
+        book_obj = Book.objects.filter(pk=kwargs['pk']).first()
+        if book_obj is None:
             return Response(data={'details': 'Data is not available for this id. '}, status=status.HTTP_404_NOT_FOUND)
-        serializer = BookSerializer(book_queryset)
+        serializer = BookSerializer(book_obj)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
