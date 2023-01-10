@@ -86,12 +86,14 @@ class BookCreateAPIView(CreateAPIView):
         # id = category["id"]
         # name = category["name"]
 
+        # if "id" in request.data["category"]:
         if "id" in request.data["category"].keys():
             # return Response(data={'details': "category id doesn't exist. "})
             category_obj = Category.objects.filter(id=category["id"]).first()
             if not category_obj:
                 return Response(data={'details': "category id doesn't exist. "})
-        elif "name" in request.data["category"].keys():
+        # elif "name" in request.data["category"].keys():
+        elif "name" in request.data["category"]:
             category_obj = Category.objects.filter(category_title=category["name"]).first()
             if not category_obj:
                 category_obj = Category.objects.create(category_title=category["name"])
@@ -197,16 +199,31 @@ class ProductCreateAPIView(CreateAPIView):
         product_tag = request.data.get('product_tag', None)
         product_name = request.data.get('product_name', None)
         category = request.data.get('category', None)
+        category_ob = None
+
         if category is None:
             return Response(data={'details': 'Category name required. '}, status=status.HTTP_404_NOT_FOUND)
+
+        # if "id" in request.data["category"]:
+        if "id" in request.data["category"].keys():
+            category_ob = Category.objects.filter(id=category["id"]).first()
+            if not category_ob:
+                return Response(data={'details': "category id doesn't exist"})
+        # elif "name" in request.data["category"]:
+        elif "name" in request.data["category"].keys():
+            category_ob = Category.objects.filter(category_title=category["name"]).first()
+            if not category_ob:
+                category_ob = Category.objects.create(category_title=category["name"])
+
         product_price = request.data.get('product_price', None)
         stock = request.data.get('stock', None)
         image_url = request.data.get('image_url', None)
         description = request.data.get('description', None)
-        product_obj = Product(product_tag=product_tag, product_name=product_name, category_id=category,
+        product_obj = Product(product_tag=product_tag, product_name=product_name, category_id=category_ob.id,
                               product_price=product_price, stock=stock, image_url=image_url, description=description)
         product_obj.save()
-        return Response(data={'detail': 'Product has created. '}, status=status.HTTP_201_CREATED)
+        serializer = ProductSerializer(product_obj)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ProductListAPIView(ListAPIView):
