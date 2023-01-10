@@ -30,8 +30,10 @@ class BookSerializer(ModelSerializer):
     category = SerializerMethodField()
 
     def get_category(self, instance):
-        category_queryset = Category.objects.filter(id=instance.id)
-        return CategoryRetrieveSerializer(category_queryset, many=True).data
+        # category_queryset = Category.objects.filter(id=instance.category_id)
+        # return CategoryRetrieveSerializer(category_queryset, many=True).data
+        category_queryset = Category.objects.filter(id=instance.category_id).first()
+        return CategoryRetrieveSerializer(category_queryset, many=False).data
 
     class Meta:
         model = Book

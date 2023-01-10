@@ -117,7 +117,8 @@ class BookCreateAPIView(CreateAPIView):
         book_obj = Book(book_title=book_title, category_id=category_obj.id, isbn=isbn, author_name=author_name,
                         pages=pages, book_price=book_price, stock=stock, description=description, image_url=image_url)
         book_obj.save()
-        return Response(data={'details': 'New Book added.'}, status=status.HTTP_201_CREATED)
+        serializer = BookSerializer(book_obj)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
 #
