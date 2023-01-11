@@ -22,4 +22,5 @@ urlpatterns = [
     path('product/update/<int:pk>/', ProductUpdateAPIView.as_view(), name='product_detail'),
 
     path('show/data/', views.json_response, name='json_response'),
+    path('show/data/2/', views.json_response2, name='json_response'),
 ]
