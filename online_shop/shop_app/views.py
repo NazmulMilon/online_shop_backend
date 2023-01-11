@@ -268,6 +268,7 @@ class ProductUpdateAPIView(UpdateAPIView):
         # product_queryset = Product.objects.filter(id=pk).update(**request.data)
         return Response(data={'Products are updated. '}, status=status.HTTP_200_OK)
 
+
 # class CategoryListAPIView(ListCreateAPIView):
 #     serializer_class = CategorySerializer
 #     queryset = Category.objects.all()
@@ -296,3 +297,25 @@ class ProductUpdateAPIView(UpdateAPIView):
 # class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
 #     serializer_class = ProductSerializer
 #     queryset = Product.objects.all()
+
+
+def json_response(request):
+    with open("/home/uzzal/Downloads/people.txt", "r") as file:
+        read = file.read()
+        dict_obj = json.loads(read)
+
+        list_of_dict = []
+
+        for data in dict_obj["results"]:
+            final_dict = {"full_name": data['full_name'],
+                          "email": data['email'],
+                          "join_date": data['join_date'],
+                          "address_1": data['people_contact']['address_1'] if data["people_contact"] else None,
+                          "address_2": data['people_contact']['address_2'] if data["people_contact"] else None,
+                          "country": data['people_contact']['country']['name'] if data["people_contact"] else None,
+                          "city": data['people_contact']['city']['name'] if data["people_contact"] else None,
+                          "state": data['people_contact']['state']['name'] if data["people_contact"] else None,
+                          "zip": data['people_contact']['zip']['name'] if data["people_contact"] else None
+                          }
+            list_of_dict.append(final_dict)
+        return JsonResponse(list_of_dict, safe=False)

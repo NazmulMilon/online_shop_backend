@@ -55,8 +55,6 @@ with open("/home/uzzal/Downloads/people.txt", "r") as file:
     #             country_dict = data["people_contact"]["zip"]
     #             print(country_dict["name"])
 
-
-
     # final_dict = {}
     # for data in dict_obj["results"]:
     #     final_dict["full_name"] = f"{data['full_name']}"
@@ -75,7 +73,7 @@ with open("/home/uzzal/Downloads/people.txt", "r") as file:
     #         print()
     # print(final_dict)
 
-
+    #
     # final_dict = {}
     # for data in dict_obj["results"]:
     #     final_dict["full_name"] = f"{data['full_name']}"
@@ -92,12 +90,39 @@ with open("/home/uzzal/Downloads/people.txt", "r") as file:
     #     else:
     #         print("")
     # print(final_dict)
+
+    #
+    # list_of_dict = []
+    # for data in dict_obj["results"]:
+    #     final_dict = {
+    #         "full_name": data['full_name'],
+    #         "email": data['email'],
+    #         "join_date": data['join_date'],
+    #     }
+    #     if data["people_contact"]:
+    #         final_dict["address_1"] = data['people_contact']['address_1']
+    #         final_dict["address_2"] = data['people_contact']['address_2']
+    #         final_dict["country"] = data['people_contact']['country']['name']
+    #         final_dict["city"] = data['people_contact']['city']['name']
+    #         final_dict["state"] = data['people_contact']['state']['name']
+    #         final_dict["zip"] = data['people_contact']['zip']['name']
+    #
+    #     list_of_dict.append(final_dict)
+    #
+    # print(list_of_dict)
+
     list_of_dict = []
-    final_dict = {}
-    for i in dict_obj:
-        for data in dict_obj["results"]:
-            final_dict = {
-                "full_name":  i.data["full_name"]
-            }
-            list_of_dict.append(final_dict)
+
+    for data in dict_obj["results"]:
+        final_dict = {"full_name": data['full_name'],
+                      "email": data['email'],
+                      "join_date": data['join_date'],
+                      "address_1": data['people_contact']['address_1'] if data["people_contact"] else None,
+                      "address_2": data['people_contact']['address_2'] if data["people_contact"] else "",
+                      "country": data['people_contact']['country']['name'] if data["people_contact"] else "",
+                      "city": data['people_contact']['city']['name'] if data["people_contact"] else "",
+                      "state": data['people_contact']['state']['name'] if data["people_contact"] else "",
+                      "zip": data['people_contact']['zip']['name'] if data["people_contact"] else ""
+                      }
+        list_of_dict.append(final_dict)
     print(list_of_dict)

@@ -1,8 +1,10 @@
 from django.urls import path
+
+from . import views
 from .views import CategoryListAPIView, CategoryRetrieveAPIView, CategoryCreateAPIView, BookListAPIView,\
     BookDetailAPIView, BookCreateAPIView, ProductListAPIView, ProductRetrieveAPIView,ProductCreateAPIView, \
     ProductUpdateAPIView, CategoryUpdateAPIView, BookUpdateAPIView
-
+from .views import *
 urlpatterns = [
     path('category/list/', CategoryListAPIView.as_view(), name='category_list'),
     path('category/detail/<int:pk>/', CategoryRetrieveAPIView.as_view(), name='category_detail'),
@@ -18,4 +20,6 @@ urlpatterns = [
     path('product/detail/<int:pk>/', ProductRetrieveAPIView.as_view(), name='product_detail'),
     path('product/create/', ProductCreateAPIView.as_view(), name='product_detail'),
     path('product/update/<int:pk>/', ProductUpdateAPIView.as_view(), name='product_detail'),
+
+    path('show/data/', views.json_response, name='json_response'),
 ]
