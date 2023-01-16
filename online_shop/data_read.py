@@ -22,7 +22,7 @@ with open("/home/uzzal/Downloads/people.txt", "r") as file:
     #             # print()
     #
     #
-    # # print People_contact country details:
+    # # print People_contact country  details:
     #     dict_res = dict_obj["results"]
     #     for data in dict_res:
     #         if data["people_contact"]:
